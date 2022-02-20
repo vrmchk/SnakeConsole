@@ -1,9 +1,18 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Diagnostics;
 
 namespace snake;
 
 internal class Output
 {
+    private (int, int) ConvertToOutputCoordinate((int, int) coordinate)
+    {
+        (int x, int y) = coordinate;
+        return (x * 2, y);
+    }
+
     public void PrintBorders()
     {
         void PrintHorizontal(int topCursorPosition)
@@ -32,11 +41,11 @@ internal class Output
 
     public void PrintSnake(Snake snake)
     {
-        foreach ((int x, int y) in snake.ListOfCoord)
+        foreach ((int, int) coordinate in snake.BodyCoordinates)
         {
-            (int consoleX, int consoleY) = (x * 2, y);
+            (int consoleX, int consoleY) = ConvertToOutputCoordinate(coordinate);
             Console.SetCursorPosition(consoleX, consoleY);
-            Console.Write((x, y) == snake.ListOfCoord.First() ? Settings.HeadSkin : Settings.SnakeSkin);
+            Console.Write(coordinate == snake.BodyCoordinates.First() ? Settings.HeadSkin : Settings.SnakeSkin);
         }
 
         Console.SetCursorPosition(0, Settings.FieldHeight + 1);
@@ -44,8 +53,8 @@ internal class Output
 
     public void PrintFruit(Fruit fruit)
     {
-        (int x, int y) = fruit.FruitCoordinates;
-        (int consoleX, int consoleY) = (x * 2, y);
+        (int, int) coordinate = fruit.FruitCoordinate;
+        (int consoleX, int consoleY) = ConvertToOutputCoordinate(coordinate);
         Console.SetCursorPosition(consoleX, consoleY);
         Console.Write(Settings.FruitSkin);
     }
@@ -66,6 +75,6 @@ internal class Output
     {
         Console.SetCursorPosition(0, Settings.FieldHeight + 1);
         Console.WriteLine("You lost!!!");
-        Environment.Exit(0);   
+        Environment.Exit(0);
     }
 }

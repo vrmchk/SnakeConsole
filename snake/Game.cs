@@ -1,7 +1,19 @@
-﻿namespace snake;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+
+namespace snake;
 
 internal class Game
 {
+    public Game(int speed = 4)
+    {
+        Settings.Speed = speed;
+        Console.WindowHeight = Settings.FieldHeight + 2;
+        Console.WindowWidth = Settings.FieldOutputWidth + 2;
+    }
+
     private bool IsDefeat(Snake snake)
     {
         if (SnakeOnBorders(snake) || SnakeEatsItself(snake))
@@ -15,15 +27,15 @@ internal class Game
 
     private bool SnakeOnBorders(Snake snake)
     {
-        (int x, int y) = snake.ListOfCoord.First();
+        (int x, int y) = snake.BodyCoordinates.First();
         return x == 0 || y == 0 || x >= Settings.FieldWidth || y >= Settings.FieldHeight;
     }
 
     private bool SnakeEatsItself(Snake snake)
     {
-        for (int i = 4; i < snake.ListOfCoord.Count; i++)
+        for (int i = 4; i < snake.BodyCoordinates.Count; i++)
         {
-            if (snake.ListOfCoord.First() == snake.ListOfCoord[i])
+            if (snake.BodyCoordinates.First() == snake.BodyCoordinates[i])
             {
                 return true;
             }
@@ -31,7 +43,6 @@ internal class Game
 
         return false;
     }
-
 
     public void Start()
     {
@@ -46,7 +57,7 @@ internal class Game
 
         while (true)
         {
-            Thread.Sleep(350);
+            Thread.Sleep(1000 / Settings.Speed);
             if (!fruit.FruitGenerated) fruit.GenerateFruit(snake);
             snake.EatFruit(fruit);
             snake.Move();

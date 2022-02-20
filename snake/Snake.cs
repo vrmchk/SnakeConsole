@@ -1,25 +1,29 @@
-﻿namespace snake;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace snake;
 
 internal class Snake
 {
     private Movements _previousMove = Movements.Right;
 
-    public List<(int, int)> ListOfCoord { get; } =
+    public List<(int, int)> BodyCoordinates { get; } =
         new List<(int, int)>((Settings.FieldWidth - 2) * (Settings.FieldHeight - 2))
         {
             (2, Settings.FieldHeight / 2),
             (1, Settings.FieldHeight / 2)
         };
-    
+
     public void Move()
     {
-        UpdateHeadByDefault();
         UpdateTail();
+        UpdateHeadByDefault();
     }
 
     private void UpdateHeadByDefault()
     {
-        (int headX, int headY) = ListOfCoord.First();
+        (int headX, int headY) = BodyCoordinates.First();
 
         switch (_previousMove)
         {
@@ -37,12 +41,12 @@ internal class Snake
                 break;
         }
 
-        ListOfCoord.Insert(0, (headX, headY));
+        BodyCoordinates.Insert(0, (headX, headY));
     }
 
     private void UpdateTail()
     {
-        ListOfCoord.Remove(ListOfCoord.Last());
+        BodyCoordinates.Remove(BodyCoordinates.Last());
     }
 
     public void MoveByInput()
@@ -67,13 +71,13 @@ internal class Snake
                 {
                     case ConsoleKey.UpArrow:
                     case ConsoleKey.W:
-                        (newHeadX, newHeadY) = ListOfCoord.First();
+                        (newHeadX, newHeadY) = BodyCoordinates.First();
                         newHeadY--;
                         _previousMove = Movements.Up;
                         break;
                     case ConsoleKey.DownArrow:
                     case ConsoleKey.S:
-                        (newHeadX, newHeadY) = ListOfCoord.First();
+                        (newHeadX, newHeadY) = BodyCoordinates.First();
                         newHeadY++;
                         _previousMove = Movements.Down;
                         break;
@@ -89,13 +93,13 @@ internal class Snake
                 {
                     case ConsoleKey.LeftArrow:
                     case ConsoleKey.A:
-                        (newHeadX, newHeadY) = ListOfCoord.First();
+                        (newHeadX, newHeadY) = BodyCoordinates.First();
                         newHeadX--;
                         _previousMove = Movements.Left;
                         break;
                     case ConsoleKey.RightArrow:
                     case ConsoleKey.D:
-                        (newHeadX, newHeadY) = ListOfCoord.First();
+                        (newHeadX, newHeadY) = BodyCoordinates.First();
                         newHeadX++;
                         _previousMove = Movements.Right;
                         break;
@@ -107,22 +111,20 @@ internal class Snake
 
             if (moveDone)
             {
-                ListOfCoord.Insert(0, (newHeadX, newHeadY));
+                BodyCoordinates.Insert(0, (newHeadX, newHeadY));
                 UpdateTail();
             }
-
-            Thread.Sleep(350);
         }
     }
 
     public void EatFruit(Fruit fruit)
     {
-        foreach ((int, int) coordinates in ListOfCoord)
+        foreach ((int, int) coordinates in BodyCoordinates)
         {
-            if (coordinates == fruit.FruitCoordinates)
+            if (coordinates == fruit.FruitCoordinate)
             {
                 fruit.FruitGenerated = false;
-                ListOfCoord.Insert(1, coordinates);
+                BodyCoordinates.Insert(1, coordinates);
                 return;
             }
         }
